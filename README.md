@@ -1,39 +1,45 @@
-# Geospatial Analysis Project
+# Week 9: Remote Sensing Analysis & Validation - ARIA v6.0
 
 ## Project Overview
 
-This is a professional geospatial analysis project designed for comprehensive spatial data processing, analysis, and visualization. The project provides a structured framework for handling various types of geospatial data and performing advanced spatial analyses.
+This project implements the ARIA v6.0 (Auditor + Rater + Indicator + Advisor) framework for remote sensing change detection and validation. The case study focuses on the Matai'an Barrier Lake formation and drainage following Typhoon Colo in 2025, using Sentinel-2 satellite imagery for water detection and landslide mapping.
+
+**Course**: Remote Sensing Analysis & Applications | National Taiwan University (NTU)  
+**Instructor**: Prof. Su Wen-Ray (Su Wen-Ray)  
+**Case Study**: Matai'an Barrier Lake (Typhoon Colo impact assessment)
 
 ## Project Structure
 
 ```
-project/
+09_EX/
 |
-|-- data/                  # Raw geospatial data
-|   |-- *.tif              # Raster data (excluded from git)
-|   |-- *.shp              # Vector data
-|   |-- *.geojson          # GeoJSON files
-|   |-- *.csv              # Tabular data with spatial information
+|-- data/                  # Geospatial validation data
+|   |-- validation_points.geojson    # 60 field-corrected validation points
 |
-|-- outputs/               # Analysis results and outputs
-|   |-- figures/           # Generated maps and visualizations
-|   |-- reports/           # Analysis reports
-|   |-- processed_data/    # Processed geospatial data
+|-- outputs/               # Analysis results and visualizations
+|   |-- W9_L1_difference_maps.png           # NDVI/NDWI change detection
+|   |-- W9_L1_enhanced_threshold_analysis.png # Threshold sensitivity analysis
+|   |-- W9_L2_masks.png                      # Water detection masks
+|   |-- W9_L2_confidence_map.png             # 3-zone confidence mapping
+|   |-- W9_L2_f1_threshold.png               # F1 score optimization
+|   |-- W9_L3_validation_summary.png         # Validation results visualization
+|   |-- AI_Advisor_Prompt_Template.txt       # AI advisor interface
+|   |-- ARIA_v6_0_Disaster_Report.txt       # Comprehensive analysis report
 |
-|-- scripts/               # Analysis scripts and notebooks
-|   |-- *.ipynb            # Jupyter notebooks
-|   |-- *.py               # Python scripts
-|   |-- utils/             # Utility functions
+|-- scripts/               # Analysis notebooks
+|   |-- Week9-Student.ipynb    # Main analysis pipeline (ARIA v6.0)
+|   |-- pre_lab.ipynb           # Preparatory exercises
 |
 |-- .env                   # Environment variables (API keys)
 |-- .gitignore             # Git ignore rules
 |-- README.md              # This file
 |-- environment.yml        # Conda environment specification
+|-- Pre-lab-Week9.md       # Laboratory instructions
 ```
 
 ## Environment Setup
 
-This project requires the `geospatial` conda environment. To set up the environment:
+This project uses the `geospatial` conda environment. To set up the environment:
 
 ```bash
 # Create the conda environment (if not exists)
@@ -43,77 +49,109 @@ conda create -n geospatial python=3.9
 conda activate geospatial
 
 # Install required packages using conda (preferred)
-conda install -c conda-forge geopandas rasterio matplotlib pandas numpy scipy scikit-learn jupyter
+conda env update -f environment.yml
 
-# If packages are not available via conda, use pip
-pip install package_name
+# Or install manually
+conda install -c conda-forge geopandas rasterio matplotlib pandas numpy scipy scikit-learn jupyter
+conda install -c conda-forge pystac-client stackstac planetary-computer seaborn
+
+# Additional packages via pip
+pip install python-dotenv
 ```
 
 ## Key Features
 
-- **Data Management**: Organized storage for raw and processed geospatial data
-- **Analysis Scripts**: Modular Python scripts and Jupyter notebooks for various analyses
-- **Visualization**: Comprehensive mapping and visualization capabilities
-- **Environment Isolation**: Dedicated conda environment for reproducible results
-- **Version Control**: Proper git configuration with sensitive data protection
+- **ARIA v6.0 Framework**: Complete Auditor + Rater + Indicator + Advisor workflow
+- **Sentinel-2 Integration**: Direct STAC catalog access to Microsoft Planetary Computer
+- **Change Detection**: NDVI and NDWI difference mapping for water and vegetation changes
+- **Threshold Optimization**: Systematic sensitivity analysis for optimal detection thresholds
+- **Ground Truth Validation**: 60 field-corrected validation points with confusion matrix analysis
+- **Confidence Mapping**: 3-zone confidence assessment (High/Medium/Low signal)
+- **AI Advisor Interface**: Interactive prompt system for operational decision support
 
-## Usage Guidelines
+## Laboratory Workflow
 
-### Data Organization
-- Place raw geospatial data in the `/data` folder
-- Large raster files (.tif, .tiff) are excluded from version control
-- Analysis results should be stored in `/outputs`
-- All analysis scripts and notebooks go in `/scripts`
+### Lab 1: Change Detection (35 minutes)
+1. **Data Loading**: Stream Sentinel-2 imagery from Microsoft Planetary Computer STAC catalog
+2. **Index Computation**: Calculate NDVI and NDWI for three temporal scenes (Pre/Mid/Post)
+3. **Difference Mapping**: Create change maps: Mid-Pre and Post-Mid transitions
+4. **Threshold Analysis**: Systematic threshold sweep from -0.6 to 0.6 with 0.025 intervals
+5. **Visualization**: 2×2 panel showing both indices and temporal transitions
 
-### API Keys Configuration
-1. Copy the `.env` file and add your API keys
-2. Never commit the `.env` file to version control
-3. Use `python-dotenv` to load environment variables in scripts
+### Lab 2: Accuracy Assessment (50 minutes)
+1. **Ground Truth Loading**: Import 60 field-corrected validation points
+2. **Mask Creation**: Generate binary water masks using optimal NDWI threshold
+3. **Validation Sampling**: Extract predicted values at validation point locations
+4. **Confusion Matrix**: Compute TP/TN/FP/FN and accuracy metrics
+5. **Confidence Mapping**: Create 3-zone confidence assessment
+6. **Report Generation**: Comprehensive validation summary and AI advisor interface
 
-### Package Installation
-- Always prefer `conda` for package installation
-- Use `pip` only when packages are not available via conda
-- Keep the `environment.yml` file updated with all dependencies
+## ARIA v6.0 Framework Components
 
-## Common Analyses
+### Auditor
+- Data quality assessment and cloud masking using SCL (Scene Classification Layer)
+- Temporal consistency checks across Pre/Mid/Post scenes
+- Coordinate system validation and range filtering
 
-This project supports various geospatial analyses including:
-- Spatial data preprocessing and cleaning
-- Raster data processing and analysis
-- Vector data operations and spatial joins
-- Spatial statistics and modeling
-- Map visualization and production
-- Remote sensing data analysis
+### Rater
+- Spectral index computation (NDVI, NDWI)
+- Threshold sensitivity analysis and optimization
+- Binary classification for water detection
 
-## Best Practices
+### Indicator
+- Confusion matrix computation and accuracy assessment
+- Producer's Accuracy, User's Accuracy, Overall Accuracy, Cohen's Kappa
+- F1 score optimization for threshold selection
 
-- Document all analysis steps in Jupyter notebooks
-- Use relative paths for data access
-- Regularly backup important results from `/outputs`
-- Keep the conda environment updated
-- Follow the established file naming conventions
+### Advisor
+- AI-powered decision support interface
+- Operational guidance for disaster response
+- Scenario-based threshold recommendations
+
+## Key Findings
+
+### Optimal Threshold Analysis
+- **Best Threshold**: 0.275 NDWI for maximum lake detection sensitivity
+- **Practical Threshold**: 0.10 NDWI for balanced accuracy
+- **Maximum Area Difference**: 29,455 pixels between lake appearance and drainage phases
+
+### Validation Results
+- **Total Validation Points**: 60 (15 lake, 15 landslide, 30 stable)
+- **Processing Range**: Full study area [121.28, 23.56, 121.52, 23.76]
+- **Coordinate System**: WGS84 (EPSG:4326) with Sentinel-2 UTM Zone 51N processing
 
 ## Dependencies
 
-Main packages used in this project:
-- geopandas: Vector data manipulation
-- rasterio: Raster data I/O and processing
-- matplotlib: Visualization
-- pandas: Data manipulation
-- numpy: Numerical computing
-- scipy: Scientific computing
-- scikit-learn: Machine learning
-- jupyter: Interactive notebooks
+### Core Remote Sensing Packages
+- **pystac-client**: STAC catalog access for Sentinel-2 data
+- **stackstac**: Efficient satellite data streaming and processing
+- **planetary-computer**: Microsoft Planetary Computer authentication
+- **geopandas**: Vector data manipulation for validation points
 
-## Contributing
+### Analysis & Visualization
+- **numpy**: Numerical computing and array operations
+- **pandas**: Data manipulation and validation point management
+- **matplotlib**: Scientific visualization and mapping
+- **seaborn**: Statistical visualization and plotting
+- **scikit-learn**: Machine learning metrics and confusion matrix
 
-When contributing to this project:
-1. Follow the established directory structure
-2. Update the README.md for new features
-3. Use the conda environment for consistency
-4. Document code changes and additions
-5. Test analyses before committing results
+### Environment & Utilities
+- **jupyter**: Interactive notebook environment
+- **python-dotenv**: Environment variable management
+- **conda**: Package management and environment isolation
 
-## License
+## Usage Instructions
 
-This project is for educational and research purposes. Please ensure proper attribution when using external datasets or code.
+1. **Environment Setup**: Install conda environment using `environment.yml`
+2. **Data Access**: Ensure internet connection for STAC catalog access
+3. **Notebook Execution**: Run `scripts/Week9-Student.ipynb` sequentially
+4. **Validation**: Results automatically saved to `/outputs` directory
+5. **AI Advisor**: Use `outputs/AI_Advisor_Prompt_Template.txt` for operational queries
+
+## Project Repository
+
+This project is hosted at: https://github.com/SamHu14/09_EX
+
+**License**: Educational and research use with proper attribution  
+**Institution**: National Taiwan University - Department of Geosciences  
+**Date**: April 2026
